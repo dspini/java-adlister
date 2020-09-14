@@ -5,20 +5,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "HelloWorldServlet", urlPatterns = "/hello")
-public class HelloWorldServlet extends HttpServlet {
+@WebServlet(name = "CounterServlet", urlPatterns = "/count")
+public class CounterServlet extends HttpServlet {
+    int hitCount;
 
-@Override
+    public void init() {
+        hitCount = 0;
+    }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
             response.setContentType("text/html");
+            hitCount++;
             PrintWriter out = response.getWriter();
-            out.println("<h1>Hello, World!</h1>");
 
-        String name = request.getParameter("name");
-
-        if(name == null) {
-            name = "Codeup";
-        }
-        out.println("<h1>Hello, " + name + "!</h1");
+            out.println(hitCount);
     }
+    public void destroy(){}
 }

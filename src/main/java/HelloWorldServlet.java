@@ -17,7 +17,7 @@ public class HelloWorldServlet extends HttpServlet {
         String name = request.getParameter("name");
 
         if(name == null) {
-            name = "Codeup";
+            name = "Donnie";
         }
         out.println("<h1>Hello, " + name + "!</h1");
     }

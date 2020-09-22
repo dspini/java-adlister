@@ -1,7 +1,3 @@
-import com.codeup.adlister.dao.DaoFactory;
-import com.codeup.adlister.models.User;
-import com.codeup.adlister.util.Password;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

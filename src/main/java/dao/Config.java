@@ -1,3 +1,5 @@
+package dao;
+
 class Config {
     public String getUrl() {
         return "jdbc:mysql://localhost/database_name?serverTimezone=UTC&useSSL=false";

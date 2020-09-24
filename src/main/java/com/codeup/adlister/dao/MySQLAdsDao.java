@@ -1,12 +1,17 @@
-import com.codeup.adlister.models.User;
+package com.codeup.adlister.dao;
+
+import com.codeup.adlister.models.Ad;
+import models.Ad;
 import com.mysql.cj.jdbc.Driver;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MySQLUsersDao implements Users {
-    private Connection connection;
+public class MySQLAdsDao implements Ads {
+    private Connection connection = null;
 
-    public MySQLUsersDao(Config config) {
+    public MySQLAdsDao(Config config) {
         try {
             DriverManager.registerDriver(new Driver());
             connection = DriverManager.getConnection(
@@ -19,46 +24,49 @@ public class MySQLUsersDao implements Users {
         }
     }
 
-
     @Override
-    public User findByUsername(String username) {
-        String query = "SELECT * FROM users WHERE username = ? LIMIT 1";
+    public List<Ad> all() {
+        PreparedStatement stmt = null;
         try {
-            PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, username);
-            return extractUser(stmt.executeQuery());
+            stmt = connection.prepareStatement("SELECT * FROM ads");
+            ResultSet rs = stmt.executeQuery();
+            return createAdsFromResults(rs);
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding a user by username", e);
+            throw new RuntimeException("Error retrieving all ads.", e);
         }
     }
 
     @Override
-    public Long insert(User user) {
-        String query = "INSERT INTO users(username, email, password) VALUES (?, ?, ?)";
+    public Long insert(Ad ad) {
         try {
-            PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
+            String insertQuery = "INSERT INTO ads(user_id, title, description) VALUES (?, ?, ?)";
+            PreparedStatement stmt = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            stmt.setLong(1, ad.getUserId());
+            stmt.setString(2, ad.getTitle());
+            stmt.setString(3, ad.getDescription());
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
             rs.next();
             return rs.getLong(1);
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating new user", e);
+            throw new RuntimeException("Error creating a new ad.", e);
         }
     }
 
-    private User extractUser(ResultSet rs) throws SQLException {
-        if (! rs.next()) {
-            return null;
-        }
-        return new User(
+    private Ad extractAd(ResultSet rs) throws SQLException {
+        return new Ad(
                 rs.getLong("id"),
-                rs.getString("username"),
-                rs.getString("email"),
-                rs.getString("password")
+                rs.getLong("user_id"),
+                rs.getString("title"),
+                rs.getString("description")
         );
     }
 
+    private List<Ad> createAdsFromResults(ResultSet rs) throws SQLException {
+        List<Ad> ads = new ArrayList<>();
+        while (rs.next()) {
+            ads.add(extractAd(rs));
+        }
+        return ads;
+    }
 }

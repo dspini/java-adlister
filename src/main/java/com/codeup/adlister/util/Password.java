@@ -13,3 +13,10 @@ public class Password {
         return BCrypt.checkpw(password, hash);
     }
 }
+
+//    String password = "password123";
+//    String hash = BCrypt.hashpw(password, Bcrypt.gensalt());
+//        boolean passwordsMatch = BCrypt.checkpw("mypassword", hash);
+//        System.out.println(passwordsMatch); // false
+//        passwordsMatch = BCrypt.checkpw("password123", hash);
+//        System.out.println(passwordsMatch); // true
